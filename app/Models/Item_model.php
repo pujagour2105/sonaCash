@@ -17,7 +17,8 @@ class Item_model extends Crud_model
 
     function getItem_list(){
         $builder = $this->db->table('ms_item ')
-                    ->select('id, item_name,status');
+                    ->select('id, item_name,status')
+                    ->orderby('id','desc');
                    
         // DataTable logic
         $datatable = DataTable::of($builder)
