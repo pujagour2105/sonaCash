@@ -2058,3 +2058,13 @@ Response:
 
 Request/Response Time: 1.0377130508423 seconds
 
+Request:
+
+
+{"username":"sonacash","apikey":"C033F-7AFE6","apirequest":"Text","sender":"SONJWL","route":"TRANS","format":"JSON","message":"Dear Sunil Test, Thank you for visiting Sona Cash For Gold. Your payment of Rs. 11238 has been processed. Your OTP is 339583 for transaction weight 20. For any queries, contact us at 8383930310.\u00a0SONA\u00a0JEWELLERS","mobile":"8757131999","TemplateID":"1707174591146701078"}
+
+Response:
+{"status":"success","message-id":["a18b-299-e712-1935"],"message":"SMS Sent Successfully"}
+
+Request/Response Time: 1.9913749694824 seconds
+

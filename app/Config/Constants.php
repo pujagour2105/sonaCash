@@ -91,7 +91,7 @@ defined('statusArray') || define('statusArray', [
     "1" => "Active", "0" => "Inactive"
 ]);
 
-defined('COMPANY_NAME') || define('COMPANY_NAME', 'Sona Jewellers');
+defined('COMPANY_NAME') || define('COMPANY_NAME', 'Sona Cash For Gold');
 
 define('SALE_START_SERIAL', '05');
 define('PURCHASE_START_SERIAL', '01');

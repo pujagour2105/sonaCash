@@ -7,7 +7,7 @@
      <meta http-equiv="X-UA-Compatible" content="IE=edge">
      <meta name="viewport" content="width=device-width initial-scale=1.0">
      <link rel="shortcut icon" href="/public/assets/images/favicon.ico" />
-     <title>SONA GOLD | <?php echo $title; ?></title>
+     <title>SONA Cash For Gold| <?php echo $title; ?></title>
  
      <!-- GLOBAL MAINLY STYLES-->
      <link href="/public/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -74,7 +74,7 @@
                 <a href="/">
                     <span class="brand">
                         <img src="/public/assets/images/s_logo.png" style="height:60px;width:60px; border-radius: 50%;">
-                        <span style="font-size:13px;"><?php echo COMPANY_NAME;?></span>
+                        <span style="font-size:10px;"><?php echo COMPANY_NAME;?></span>
                     </span>
                     <span class="brand-mini">
                         <img src="/public/assets/images/favicon.ico">

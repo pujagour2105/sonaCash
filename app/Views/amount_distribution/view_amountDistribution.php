@@ -104,10 +104,10 @@
             <!-- Print Header -->
             <div class="print-header">
                 <div class="print-header-left">
-                    <img src="<?= base_url('/public/assets/images/s_logo.png') ?>" alt="SS GOLD Logo" class="print-logo">
+                    <img src="<?= base_url('/public/assets/images/s_logo.png') ?>" alt="Sona Cash Logo" class="print-logo">
                 </div>
                 <div class="print-header-right">
-                    <h2 class="company-name">SS GOLD</h2>
+                    <h2 class="company-name"><?php echo COMPANY_NAME;?></h2>
                     <p class="company-details">Purity in Trust</p>
                 </div>
             </div>
