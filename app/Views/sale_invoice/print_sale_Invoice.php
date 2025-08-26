@@ -512,7 +512,7 @@
 
                 <div class="branches">
                     OUR BRANCHES <br> <?php
-                       echo ucwords("Laxmi Nagar, Indrapuram, Noida") ;
+                       echo ucwords("ROHINI, DURGAPURI") ;
                     foreach ($branch_name as $branch) {
                         // echo htmlspecialchars($branch['branch_name'] ?? 'ROHINI, DURGAPURI') . ", ";
                     } ?>

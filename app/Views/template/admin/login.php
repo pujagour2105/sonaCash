@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <link rel="shortcut icon" href="/public/assets/images/favicon.png" />
-    <title>BMT | <?php echo $title; ?></title>
+    <title>SS Jewellers | <?php echo $title; ?></title>
     <!-- GLOBAL MAINLY STYLES-->
     <link href="/public/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="/public/libs/line-awesome/css/line-awesome.min.css" rel="stylesheet" />
