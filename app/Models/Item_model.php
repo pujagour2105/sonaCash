@@ -24,6 +24,9 @@ class Item_model extends Crud_model
         $datatable = DataTable::of($builder)
 
             ->filter(function ($builder, $request) {
+                if (isset($request->status)) {
+                    $builder->where(["status" => $request->status]);
+                }
              
                 if (!empty($request->item_name)) {
                     if (!empty($item_name)) {
@@ -44,7 +47,7 @@ class Item_model extends Crud_model
                    
                 // }
                 return '<button type="button" class="btn btn-sm btn-success" style="margin-right: 5px;" data-act="ajax-modal" data-title="Edit Item" data-action-url="' . base_url('item/addItemForm/' . $row->id) . '"><i class="fa fa-edit fa-xs"></i></button>';;
-            }, 'last')->hide('status')
+            }, 'last')->hide('status')->hide('id')->addNumbering()
 
             ->toJson();
 

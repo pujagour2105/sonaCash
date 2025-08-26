@@ -69,13 +69,103 @@ class Report_model extends Crud_model
 
 
    
+    // public function getBranchReport()
+    // {
+    //     $request = service('request');
+    //     $branch_id = $request->getPost('branch_id');
+    //     $month_id = $request->getPost('month_id');
+    //     $from_date = $request->getPost('from_date');
+        
+    //     $to_date = $request->getPost('to_date') ? $request->getPost('to_date') : $from_date;
+
+    //     // Validation
+    //     if (empty($branch_id)) {
+    //         return $this->response->setJSON([
+    //             'data' => [],
+    //             'error' => 'Branch ID is required'
+    //         ]);
+    //     }
+
+    //     $builder = $this->db->table('rpt_ledger');
+    //     $builder->select('ts, branch_id, amount, type, available_balance, opening_amount');
+    //     $builder->where('branch_id', $branch_id)->orderBy('ts desc');
+
+    //     if (!empty($month_id)) {
+    //         $builder->where('MONTH(ts)', $month_id);
+    //     }
+
+    //     if (!empty($from_date)) {
+    //         $builder->where('DATE(ts) >=', $from_date);
+    //     }
+
+    //     if (!empty($to_date)) {
+    //         $builder->where('DATE(ts) <=', $to_date);
+    //     }
+
+    
+    //     $builder->orderBy('ts', 'desc');
+    //     $result = $builder->get()->getResultArray();
+        
+    //     // Process the result into grouped daily data
+    //     $dailyReport = [];
+
+    //     foreach ($result as $entry) {
+    //         $date = date('Y-m-d', strtotime($entry['ts']));
+
+    //         if (!isset($dailyReport[$date])) {
+    //             $dailyReport[$date] = [
+    //                 'only_date' => $date,
+    //                 'opening_amount' => $entry['opening_amount'],
+    //                 'todays_credit' => 0,
+    //                 'todays_debit' => 0,
+    //                 'closing_amount' => 0, // will update as loop continues
+    //             ];
+    //         }
+
+    //         // Accumulate credit/debit
+    //         if ($entry['type'] === 'credit') {
+    //             $dailyReport[$date]['todays_credit'] += $entry['amount'];
+    //         } elseif ($entry['type'] === 'debit') {
+    //             $dailyReport[$date]['todays_debit'] += $entry['amount'];
+    //         }
+
+    //         // Always keep the latest available_balance as closing
+    //         $dailyReport[$date]['closing_amount'] =($dailyReport[$date]['opening_amount']+ $dailyReport[$date]['todays_credit'])-$dailyReport[$date]['todays_debit'] ;
+    //     }
+
+    //     // Format for DataTables output
+    //     $data = [];
+    //     foreach ($dailyReport as $row) {
+    //         $data[] = [
+    //             date('d-m-Y', strtotime($row['only_date'])),
+    //             number_format($row['opening_amount'], 2),
+    //             number_format($row['todays_credit'], 2),
+    //             number_format($row['todays_debit'], 2),
+    //             number_format($row['closing_amount'], 2),
+    //         ];
+    //     }
+
+    //     // print_r($data);
+    //     // exit;
+
+    //     echo json_encode([
+    //         'data' => $data,
+    //         'recordsFiltered' => count($data),
+    //         'recordsTotal' => count($data),
+    //     ]);
+    //     exit;
+
+    //     // return $this->response->setJSON([
+    //     //     'data' => $data
+    //     // ]);
+    // }
+
     public function getBranchReport()
     {
         $request = service('request');
         $branch_id = $request->getPost('branch_id');
         $month_id = $request->getPost('month_id');
         $from_date = $request->getPost('from_date');
-        
         $to_date = $request->getPost('to_date') ? $request->getPost('to_date') : $from_date;
 
         // Validation
@@ -87,8 +177,8 @@ class Report_model extends Crud_model
         }
 
         $builder = $this->db->table('rpt_ledger');
-        $builder->select('ts, branch_id, amount, type, available_balance, opening_amount');
-        $builder->where('branch_id', $branch_id)->orderBy('ts desc');
+        $builder->select('ts, branch_id, amount, type, available_balance');
+        $builder->where('branch_id', $branch_id);
 
         if (!empty($month_id)) {
             $builder->where('MONTH(ts)', $month_id);
@@ -102,35 +192,41 @@ class Report_model extends Crud_model
             $builder->where('DATE(ts) <=', $to_date);
         }
 
-    
-        $builder->orderBy('ts', 'desc');
+        $builder->orderBy('ts', 'asc'); // important: oldest first
         $result = $builder->get()->getResultArray();
-        
-        // Process the result into grouped daily data
+
+        // Process into daily report
         $dailyReport = [];
+        $prevClosing = 0; // first day opening = 0
 
         foreach ($result as $entry) {
             $date = date('Y-m-d', strtotime($entry['ts']));
 
             if (!isset($dailyReport[$date])) {
+                // initialize day
                 $dailyReport[$date] = [
-                    'only_date' => $date,
-                    'opening_amount' => $entry['opening_amount'],
-                    'todays_credit' => 0,
-                    'todays_debit' => 0,
-                    'closing_amount' => 0, // will update as loop continues
+                    'only_date'      => $date,
+                    'opening_amount' => $prevClosing,
+                    'todays_credit'  => 0,
+                    'todays_debit'   => 0,
+                    'closing_amount' => $prevClosing, // will update below
                 ];
             }
 
-            // Accumulate credit/debit
+            // accumulate credit/debit
             if ($entry['type'] === 'credit') {
                 $dailyReport[$date]['todays_credit'] += $entry['amount'];
             } elseif ($entry['type'] === 'debit') {
                 $dailyReport[$date]['todays_debit'] += $entry['amount'];
             }
 
-            // Always keep the latest available_balance as closing
-            $dailyReport[$date]['closing_amount'] =($dailyReport[$date]['opening_amount']+ $dailyReport[$date]['todays_credit'])-$dailyReport[$date]['todays_debit'] ;
+            // calculate closing
+            $dailyReport[$date]['closing_amount'] =
+                ($dailyReport[$date]['opening_amount'] + $dailyReport[$date]['todays_credit']) -
+                $dailyReport[$date]['todays_debit'];
+
+            // update prevClosing for next day
+            $prevClosing = $dailyReport[$date]['closing_amount'];
         }
 
         // Format for DataTables output
@@ -145,20 +241,14 @@ class Report_model extends Crud_model
             ];
         }
 
-        // print_r($data);
-        // exit;
-
         echo json_encode([
             'data' => $data,
             'recordsFiltered' => count($data),
             'recordsTotal' => count($data),
         ]);
         exit;
-
-        // return $this->response->setJSON([
-        //     'data' => $data
-        // ]);
     }
+
 
 
     public function getInvoiceReport(){

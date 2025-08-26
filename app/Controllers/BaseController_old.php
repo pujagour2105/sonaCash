@@ -33,7 +33,7 @@ abstract class BaseController extends Controller
      * @var CLIRequest|IncomingRequest
      */
     protected $request;
-    public $template, $model, $form_validation, $parser;
+    public $template, $model, $form_validation, $parser, $session;
 
     /**
      * An array of helpers to be loaded automatically upon
@@ -71,7 +71,7 @@ abstract class BaseController extends Controller
         //service('request')->setLocale($language);
 
 
-        $this->session = \Config\Services::session();
+        // $this->session = \Config\Services::session();
         $this->form_validation = \Config\Services::validation();
         $this->parser = \Config\Services::parser();
     }
@@ -86,7 +86,8 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
 
-        // E.g.: $this->session = \Config\Services::session();
+        $this->session = \Config\Services::session();
+        $this->checkSession(); 
     }
 
     private function get_models_array()
@@ -96,5 +97,21 @@ abstract class BaseController extends Controller
             // 'Users_model'
         );
     }
+
+    protected function checkSession()
+    {
+        // Example: check if any of the required session keys are missing or empty
+        $requiredKeys = ['id', 'name']; // Add more keys as needed
+
+        foreach ($requiredKeys as $key) {
+           
+            if (!$this->session->has($key) || empty($this->session->get($key))) {
+                // echo "<script>console.log('Session key missing or empty: $key');</script>";
+                // $this->session->setFlashdata('error', 'Session expired. Please log in again.');
+                header('Location: ' . base_url('/')); // or just '/'
+            }
+        }
+    }
+    
     
 }
